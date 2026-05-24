@@ -1,0 +1,16 @@
+# docker-compose.yml for CLANK FIGHTS
+# Usage:
+#   docker compose up --build
+#   then open http://localhost:8080
+
+services:
+  clank-fights:
+    build: .
+    image: clank-fights:latest
+    container_name: clank-fights
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    # If you ever want to live-edit files while the container is running (dev only):
+    # volumes:
+    #   - .:/usr/share/nginx/html:ro

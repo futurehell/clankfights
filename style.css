@@ -1,0 +1,346 @@
+/* Local self-hosted font for full offline/Docker support */
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('assets/fonts/PressStart2P-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Extra visual flavor beyond Tailwind */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.pixel {
+  font-family: "Press Start 2P", system-ui;
+  image-rendering: pixelated;
+}
+
+/* Lyric lines get a little punch when they appear */
+.lyric-line {
+  animation: popIn 0.18s ease-out backwards;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Judge comments feel heavier */
+.judge-verdict {
+  transition: all 0.2s ease;
+}
+
+/* Robot cards feel chunky */
+.robot-card {
+  border-color: #3f3f46;
+}
+.robot-card.border-orange-500 {
+  box-shadow: 0 0 0 1px rgb(249 115 22 / 0.3);
+}
+
+/* Scrollbars for the feeds */
+#a-feed::-webkit-scrollbar,
+#b-feed::-webkit-scrollbar,
+#judge-feed::-webkit-scrollbar {
+  width: 6px;
+}
+#a-feed::-webkit-scrollbar-thumb,
+#b-feed::-webkit-scrollbar-thumb,
+#judge-feed::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+
+/* Timer drama */
+#timer {
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s ease;
+}
+
+/* Subtle industrial feel */
+.scanline:after {
+  opacity: 0.6;
+}
+
+/* Final winner card pop */
+#arena-screen .border-orange-500 {
+  box-shadow: 0 0 0 1px rgb(249 115 22 / 0.2),
+              0 10px 30px -15px rgb(0 0 0 / 0.6);
+}
+
+/* ============================================
+   NEW STAGE + SHAKE ANIMATIONS (back-and-forth rap battle)
+   ============================================ */
+
+.performer {
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+}
+
+.performer.active {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.performer.shaking {
+  animation: clankerShake 650ms cubic-bezier(0.36, 0, 0.66, -0.56);
+}
+
+@keyframes clankerShake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-5px, 3px) rotate(-2.2deg); }
+  30% { transform: translate(6px, -4px) rotate(2.8deg); }
+  45% { transform: translate(-4px, 2px) rotate(-1.8deg); }
+  60% { transform: translate(5px, -3px) rotate(2.1deg); }
+  75% { transform: translate(-2px, 1px) rotate(-0.9deg); }
+}
+
+.performer .avatar {
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.performer.shaking .avatar {
+  animation: avatarPop 650ms ease;
+}
+
+@keyframes avatarPop {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.18); }
+  60% { transform: scale(0.94); }
+}
+
+/* Transcript lines */
+.transcript-line {
+  padding: 6px 12px;
+  margin: 4px 0;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.35;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.transcript-line .speaker {
+  font-weight: 700;
+  font-size: 11px;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+.transcript-line .text {
+  flex: 1;
+}
+
+/* Custom bot badges */
+.custom-badge {
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #27272a;
+  color: #f4a261;
+  border: 1px solid #3f3f46;
+}
+
+/* === PS1 / PaRappa Game Text Styling — Clean + Chunky === */
+.parappa-text {
+  font-family: "Press Start 2P", system-ui;
+  font-weight: 700;
+  letter-spacing: 1px;
+  -webkit-text-stroke: 3.5px #111;
+  text-shadow: 3px 3px 0 #000;
+  image-rendering: pixelated;
+  font-size: 16px;
+  line-height: 1;
+  color: #fff;
+}
+
+.parappa-float {
+  animation: parappaPop 480ms cubic-bezier(0.2, 1.25, 0.3, 1) both;
+  transform-origin: center;
+}
+
+@keyframes parappaPop {
+  0%   { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+  35%  { transform: scale(1.6)  rotate(6deg); }
+  55%  { transform: scale(0.8)  rotate(-3deg); }
+  75%  { transform: scale(1.15) rotate(2deg); }
+  100% { transform: scale(1)    rotate(0deg); opacity: 1; }
+}
+
+.parappa-judge-box {
+  font-family: "Press Start 2P", system-ui;
+  letter-spacing: 0.5px;
+  -webkit-text-stroke: 2px #000;
+  text-shadow: 2px 2px 0 #000;
+  transition: transform 140ms ease;
+  font-size: 13px;
+  color: #fde047;
+  background: #1a1408;
+  border: 3px solid #facc15;
+}
+
+/* Judge character + face bounce (whole PNG bobs in time with the beat) */
+#judge-container {
+  animation: judgeBeat 680ms infinite ease-in-out;
+  will-change: transform;
+}
+
+#judge-face {
+  display: inline-block;
+  transition: transform 80ms ease;
+  font-size: 17px !important;
+  letter-spacing: 0 !important;
+  -webkit-text-stroke: 1.5px #111 !important;
+  /* text-shadow is intentionally left to the inline neon glow in the HTML */
+  /* IMPORTANT: no animation here — the emoji must stay glued to the PNG's face as the whole container bobs */
+}
+
+@keyframes judgeBeat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30%      { transform: translateY(-9px)  scale(1.05); }
+  62%      { transform: translateY(3px)   scale(0.965); }
+}
+
+
+
+/* === Robot Ring Flicker (performance feedback) === */
+.performer {
+  transition: border-color 80ms ease, box-shadow 120ms ease;
+}
+
+.performer.ring-good {
+  border-color: #4ade80 !important;
+  box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.4);
+  animation: ringFlickerGood 650ms ease;
+}
+
+.performer.ring-bad {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 6px rgba(248, 113, 113, 0.45);
+  animation: ringFlickerBad 650ms ease;
+}
+
+.performer.ring-meh {
+  border-color: #facc15 !important;
+  box-shadow: 0 0 0 6px rgba(250, 204, 21, 0.4);
+  animation: ringFlickerMeh 650ms ease;
+}
+
+@keyframes ringFlickerGood {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.4); }
+  50%      { box-shadow: 0 0 0 14px rgba(74, 222, 128, 0.15); }
+}
+
+@keyframes ringFlickerBad {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0.45); }
+  50%      { box-shadow: 0 0 0 14px rgba(248, 113, 113, 0.2); }
+}
+
+@keyframes ringFlickerMeh {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(250, 204, 21, 0.4); }
+  50%      { box-shadow: 0 0 0 12px rgba(250, 204, 21, 0.15); }
+}
+
+/* Clean color variants (no neon glow) */
+.parappa-good {
+  color: #bef575;
+  border-color: #65a30d;
+}
+
+.parappa-bad {
+  color: #fda4af;
+  border-color: #be123c;
+}
+
+.parappa-heckyeah {
+  color: #fde047;
+  border-color: #ca8a04;
+}
+
+/* ============================================
+   PaRappa the Rapper STYLE - PS1 Aesthetic
+   Chunky outlines, bright colors, squash & stretch, game UI
+   ============================================ */
+
+#verdict-splash {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(2px);
+}
+
+#verdict-content {
+  font-family: "Press Start 2P", system-ui, sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  -webkit-text-stroke: 3px #111;
+  text-shadow: 0 0 20px rgba(0,0,0,0.8);
+  animation: verdictPop 420ms cubic-bezier(0.23, 1.0, 0.32, 1) both;
+}
+
+#verdict-content.bad {
+  color: #f87171;
+  -webkit-text-stroke-color: #450a0a;
+  text-shadow: 0 0 30px #f87171;
+  animation: verdictBadShake 520ms ease;
+}
+
+#verdict-content.good {
+  color: #4ade80;
+  -webkit-text-stroke-color: #052e16;
+  text-shadow: 0 0 30px #4ade80;
+  animation: verdictGoodPop 520ms ease;
+}
+
+#verdict-content.great {
+  color: #fde047;
+  -webkit-text-stroke-color: #3f2d00;
+  text-shadow: 0 0 40px #fde047, 0 0 80px #facc15;
+  animation: verdictLegend 620ms ease;
+}
+
+@keyframes verdictPop {
+  0%   { transform: scale(0.2) translateY(40px); opacity: 0; }
+  60%  { transform: scale(1.15) translateY(-8px); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes verdictBadShake {
+  0%, 100% { transform: scale(1) rotate(0); }
+  15% { transform: scale(1.05) rotate(-3deg); }
+  30% { transform: scale(0.96) rotate(4deg); }
+  45% { transform: scale(1.04) rotate(-2.5deg); }
+  60% { transform: scale(0.98) rotate(2deg); }
+}
+
+@keyframes verdictGoodPop {
+  0% { transform: scale(0.6); }
+  40% { transform: scale(1.25); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes verdictLegend {
+  0% { transform: scale(0.3) rotate(-8deg); }
+  35% { transform: scale(1.3) rotate(6deg); }
+  65% { transform: scale(0.92) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Extra stretchy text for the really bad ones */
+#verdict-content .suck {
+  display: block;
+  font-size: 1.6em;
+  letter-spacing: 8px;
+  margin-top: -4px;
+  animation: suckStretch 800ms ease forwards;
+}
+
+@keyframes suckStretch {
+  0% { transform: scaleX(0.3) scaleY(1.6); }
+  40% { transform: scaleX(1.4) scaleY(0.75); }
+  100% { transform: scaleX(1) scaleY(1); }
+}

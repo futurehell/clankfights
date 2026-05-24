@@ -1,0 +1,16 @@
+# Docker ignore for clank-fights
+.git
+.gitignore
+*.md
+Dockerfile*
+docker-compose*
+.dockerignore
+.DS_Store
+Thumbs.db
+corpora/
+*.log
+node_modules/
+dist/
+.idea/
+.vscode/
+sessions/

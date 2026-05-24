@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLANK FIGHTS // MARKOV MAYHEM</title>
+  <script src="assets/tailwind.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .pixel { font-family: "Press Start 2P", system-ui; letter-spacing: 1px; }
+    .robot-card { transition: all .1s cubic-bezier(0.23, 1, 0.32, 1); }
+    .robot-card:hover { transform: translateY(-1px); }
+    .lyric-line { font-size: 13px; line-height: 1.35; padding: 3px 8px; border-radius: 4px; margin: 3px 0; background: rgba(255,255,255,0.03); }
+    .judge-verdict { font-size: 13px; }
+    .scanline { position: relative; }
+    .scanline:after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(255,255,255,0.03) 50%, transparent 50%); background-size: 100% 4px; pointer-events: none; animation: scan 1.8s linear infinite; }
+    @keyframes scan { 0% { background-position: 0 0; } 100% { background-position: 0 200px; } }
+    .terminal { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+  <div class="max-w-5xl mx-auto">
+    <!-- HEADER -->
+    <div class="flex items-center justify-between px-6 pt-6 pb-3">
+      <div>
+        <div id="title" class="pixel text-5xl font-black tracking-[-2px] text-orange-500 cursor-pointer select-none">CLANK FIGHTS</div>
+        <div class="text-[10px] text-orange-500/70 -mt-1 tracking-[4px]">MARKOV ROBOT RAP BATTLE SIMULATOR v0.9</div>
+      </div>
+      <div class="text-right text-xs text-zinc-500">
+        3 ROUNDS • 2 MIN EACH • JUDGED BY A THIRD BOT<br>
+        <span class="text-orange-400">NO HUMANS WERE HARMED</span>
+      </div>
+    </div>
+
+    <!-- SELECTOR SCREEN -->
+    <div id="selector-screen" class="px-6">
+      <div class="text-center mb-5">
+        <div class="inline-block px-4 py-1 rounded-full bg-zinc-900 text-orange-400 text-xs tracking-widest border border-orange-900/40">CHOOSE YOUR FIGHTERS</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Fighter A -->
+        <div>
+          <div class="flex items-center gap-2 mb-2 px-1">
+            <div class="text-xs uppercase tracking-widest text-orange-400">FIGHTER A — LEFT CORNER</div>
+          </div>
+          <div id="fighter-a" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- Fighter B -->
+        <div>
+          <div class="flex items-center gap-2 mb-2 px-1">
+            <div class="text-xs uppercase tracking-widest text-green-400">FIGHTER B — RIGHT CORNER</div>
+          </div>
+          <div id="fighter-b" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
+      </div>
+
+      <div class="mt-8 flex justify-center">
+        <button id="btn-throw-down"
+                class="pixel px-10 py-4 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 transition-colors text-black text-xl font-black rounded-2xl shadow-xl shadow-orange-950/60">
+          THROW DOWN
+        </button>
+      </div>
+
+      <div class="text-center mt-4 text-[10px] text-zinc-500">
+        Click two different (or same) robots • Press SPACE to start
+      </div>
+    </div>
+
+    <!-- ARENA SCREEN (NEW STAGE LAYOUT) -->
+    <div id="arena-screen" class="hidden px-6 pb-12">
+      <!-- Top controls -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-4">
+          <div id="round-banner" class="pixel text-orange-400 text-sm tracking-widest">ROUND 1 / 3</div>
+          <div id="timer" class="font-mono text-5xl tabular-nums tracking-[-2px] text-white">2:00</div>
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-rematch" disabled
+                  class="text-xs px-4 py-2 rounded-xl border border-zinc-700 hover:bg-zinc-900 disabled:opacity-40">REMATCH</button>
+          <button id="btn-new-fight" disabled
+                  class="text-xs px-4 py-2 rounded-xl border border-zinc-700 hover:bg-zinc-900 disabled:opacity-40">NEW FIGHT</button>
+        </div>
+      </div>
+
+      <!-- THE STAGE: two big portraits facing each other -->
+      <div class="flex items-center justify-center gap-8">
+        <!-- Left Performer -->
+        <div id="left-performer" class="performer w-72 bg-zinc-900 border-[5px] border-orange-900/70 rounded-3xl p-5 text-center relative">
+          <div id="left-avatar" class="avatar text-[92px] leading-none mb-1 select-none">🤖</div>
+          <div id="left-name" class="font-black text-3xl text-orange-400 tracking-tight"></div>
+          <div id="left-subtitle" class="text-[10px] text-zinc-400 -mt-0.5"></div>
+
+          <div class="mt-3 flex items-center justify-center gap-2 text-xs">
+            <div class="px-3 py-px rounded-full bg-zinc-950 border border-orange-900/40 text-orange-300">
+              <span id="left-total">0</span> pts
+            </div>
+          </div>
+
+          <!-- Small PS1-style reaction bubble for left robot (end of round) -->
+          <div id="left-reaction" class="hidden absolute -top-1 right-1 parappa-text px-3 py-1 text-[17px] bg-[#111] border-[3px] shadow-[4px_4px_0_#000]"
+               style="letter-spacing: 0.5px;"></div>
+
+          <!-- Floating judge comment over left robot (per-line) -->
+          <div id="left-judge-float" class="hidden absolute -top-14 left-1/2 -translate-x-1/2 parappa-text parappa-float px-4 py-1.5 bg-[#0f0f0f] border-[4px] shadow-[4px_4px_0_#000] text-[22px]"
+               style="white-space: nowrap; line-height: 1;"></div>
+        </div>
+
+        <!-- Center Judge (only direct child between the two bots now → truly centered) -->
+        <div id="judge-stage" class="text-center min-w-[150px] relative">
+          <!-- Small floating judge quip (per-line reactions like "FRESH", "WEAK", "COOL!") -->
+          <div id="judge-comment-box"
+               class="parappa-judge-box absolute -top-3 left-1/2 -translate-x-1/2 z-10
+                      min-w-[68px] px-2 py-px text-[10px] font-bold tracking-wider
+                      bg-[#1a1408] border-[3px] border-[#facc15] text-[#fde047]
+                      flex items-center justify-center shadow-inner whitespace-nowrap"
+               style="-webkit-text-stroke: 1px #3f2d00; opacity: 0; transition: all 120ms ease;">
+            <!-- Updated live by JS -->
+          </div>
+
+          <!-- Round winner announcement (above the judge) -->
+          <div id="round-winner" 
+               class="hidden mb-1 text-sm font-bold tracking-wider text-yellow-400"
+               style="font-family: 'Press Start 2P', system-ui; -webkit-text-stroke: 1.5px #111;">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Judge: transparent body image + text face overlay -->
+          <div id="judge-container" class="relative inline-block">
+            <img id="judge-body" src="assets/judge.png" alt="Judge Gearbox" 
+                 style="height: 178px; width: auto; display: block;">
+            
+            <!-- Text face — tiny so it actually fits on her head while the whole PNG bobs -->
+            <div id="judge-face" 
+                 class="parappa-text absolute text-[17px] leading-none text-white whitespace-nowrap inline-block"
+                 style="top: 29%; left: 46%; transform: translate(-50%, -50%) translate(6px, 20px);
+                        text-shadow: 0 0 1px #39ff14, 0 0 2px #00ff41;
+                        pointer-events: none;">
+              ^_^
+            </div>
+          </div>
+
+          <div class="text-[10px] text-amber-400 tracking-widest -mt-1">JUDGE GEARBOX</div>
+        </div>
+
+        <!-- Right Performer -->
+        <div id="right-performer" class="performer w-72 bg-zinc-900 border-[5px] border-green-900/70 rounded-3xl p-5 text-center relative">
+          <div id="right-avatar" class="avatar text-[92px] leading-none mb-1 select-none">🗑️</div>
+          <div id="right-name" class="font-black text-3xl text-green-400 tracking-tight"></div>
+          <div id="right-subtitle" class="text-[10px] text-zinc-400 -mt-0.5"></div>
+
+          <div class="mt-3 flex items-center justify-center gap-2 text-xs">
+            <div class="px-3 py-px rounded-full bg-zinc-950 border border-green-900/40 text-green-300">
+              <span id="right-total">0</span> pts
+            </div>
+          </div>
+
+          <!-- Small PS1-style reaction bubble for right robot (end of round) -->
+          <div id="right-reaction" class="hidden absolute -top-1 left-1 parappa-text px-3 py-1 text-[17px] bg-[#111] border-[3px] shadow-[4px_4px_0_#000]"
+               style="letter-spacing: 0.5px;"></div>
+
+          <!-- Floating judge comment over right robot (per-line) -->
+          <div id="right-judge-float" class="hidden absolute -top-14 left-1/2 -translate-x-1/2 parappa-text parappa-float px-4 py-1.5 bg-[#0f0f0f] border-[4px] shadow-[4px_4px_0_#000] text-[22px]"
+               style="white-space: nowrap; line-height: 1;"></div>
+        </div>
+      </div>
+
+      <!-- ARENA LOG (combined transcript + judge verdicts) -->
+      <div class="mt-5 mx-auto max-w-3xl">
+        <div class="flex items-center gap-2 px-2 mb-1.5">
+          <div class="text-[10px] uppercase tracking-widest text-zinc-400">ARENA LOG</div>
+          <div class="flex-1 h-px bg-zinc-800"></div>
+        </div>
+
+        <div id="transcript"
+             class="h-52 overflow-y-auto rounded-2xl border border-zinc-800 bg-zinc-950 p-4 terminal text-sm leading-snug">
+          <!-- Rap lines + round verdicts injected here by JS -->
+        </div>
+      </div>
+
+      <!-- Manual Next Round (safety net) -->
+      <div id="next-round-container" class="hidden max-w-3xl mx-auto mt-3 text-center">
+        <button id="btn-next-round"
+                class="px-8 py-3 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-black font-bold rounded-2xl text-lg tracking-wider shadow-lg">
+          NEXT ROUND →
+        </button>
+      </div>
+
+      <div class="text-center text-[10px] text-zinc-500 mt-5 max-w-2xl mx-auto">
+        Real Markov chains. Real scores. Real roasts. When a clanker drops a bar, their whole head shakes on stage.
+      </div>
+    </div>
+  </div>
+
+  <!-- PaRappa-style Flashy Judge Verdict Splash -->
+  <div id="verdict-splash"
+       class="hidden fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
+    <div id="verdict-content"
+         class="text-center px-8 py-6 rounded-3xl transition-all duration-200">
+      <!-- JS injects huge styled text here -->
+    </div>
+  </div>
+
+  <!-- CUSTOM BOT MODAL -->
+  <div id="custom-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-700 rounded-3xl w-full max-w-lg p-6">
+      <div class="text-xl font-bold text-orange-400 mb-1">Create Your Own Clanker</div>
+      <div class="text-xs text-zinc-400 mb-4">Train a fresh Markov bot from any text. Export it and send to friends.</div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="col-span-2">
+          <label class="text-xs text-zinc-400">Bot Name</label>
+          <input id="custom-name" class="w-full bg-black border border-zinc-700 rounded-xl px-3 py-2 text-sm" placeholder="Rusty McRustface" value="My Custom Clanker">
+        </div>
+        <div>
+          <label class="text-xs text-zinc-400">Subtitle</label>
+          <input id="custom-subtitle" class="w-full bg-black border border-zinc-700 rounded-xl px-3 py-2 text-sm" value="Trained in the Back Alley">
+        </div>
+        <div>
+          <label class="text-xs text-zinc-400">Avatar (emoji)</label>
+          <input id="custom-avatar" class="w-full bg-black border border-zinc-700 rounded-xl px-3 py-2 text-sm" value="🦾">
+        </div>
+        <div>
+          <label class="text-xs text-zinc-400">Color</label>
+          <input id="custom-color" type="color" value="#fb923c" class="w-full h-10 bg-black border border-zinc-700 rounded-xl p-1">
+        </div>
+        <div>
+          <label class="text-xs text-zinc-400">Markov Order</label>
+          <select id="custom-order" class="w-full bg-black border border-zinc-700 rounded-xl px-3 py-2 text-sm">
+            <option value="2" selected>2 — classic chaos</option>
+            <option value="3">3 — slightly smarter</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs text-zinc-400">Training Corpus (the more ridiculous the better)</label>
+        <textarea id="custom-corpus" rows="7" class="w-full bg-black border border-zinc-700 rounded-2xl p-3 text-sm font-mono"
+          placeholder="Paste your friend's terrible rap text here or write your own...&#10;&#10;Example:&#10;my gears grind at midnight the oil drips slow&#10;i clank your whole crew into the scrap heap below..."></textarea>
+      </div>
+
+      <div class="flex gap-3 mt-5">
+        <button id="custom-save" class="flex-1 bg-orange-500 hover:bg-orange-400 text-black font-bold py-2.5 rounded-2xl">TRAIN & SAVE BOT</button>
+        <button id="custom-cancel" class="px-6 border border-zinc-600 hover:bg-zinc-800 rounded-2xl">Cancel</button>
+      </div>
+
+      <div class="text-[10px] text-center text-zinc-500 mt-3">Bots are saved in your browser (localStorage) and can be exported as .json for your friends.</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { init } from './src/ui.js';
+    init();
+  </script>
+</body>
+</html>
