@@ -9,7 +9,8 @@ services:
     image: clank-fights:latest
     container_name: clank-fights
     ports:
-      - "8080:80"
+      # Loopback-only on the VPS; Apache proxies /clankerfights/ → here.
+      - "127.0.0.1:8084:80"
     restart: unless-stopped
     # If you ever want to live-edit files while the container is running (dev only):
     # volumes:

@@ -8,7 +8,10 @@ LABEL org.opencontainers.image.description="Markov chain robot rap battle simula
 LABEL org.opencontainers.image.authors="built with excessive hubris"
 
 # Clean the default nginx welcome page
-RUN rm -rf /usr/share/nginx/html/*
+RUN rm -rf /usr/share/nginx/html/* && rm -f /etc/nginx/conf.d/default.conf
+
+# Custom server config (gzip, caching, <base> injection for subpath hosting)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy only the web assets we actually need
 COPY index.html /usr/share/nginx/html/
